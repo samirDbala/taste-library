@@ -147,3 +147,45 @@ async function handleMealClick(e) {
     errorContainer.classList.remove("hidden");
   }
 }
+
+// random recommendations for homepage
+async function loadRandomMeals() {
+  try {
+    // set heading
+    resultHeading.textContent = "Recommended Recipes";
+
+    // clear previous content
+    mealsContainer.innerHTML = "";
+
+    // hide error if any
+    errorContainer.classList.add("hidden");
+
+    // fetch 6 random meals
+    for (let i = 0; i < 6; i++) {
+      const res = await fetch("https://www.themealdb.com/api/json/v1/1/random.php");
+      const data = await res.json();
+
+      if (data.meals) {
+        // add meals to UI
+        data.meals.forEach((meal) => {
+          mealsContainer.innerHTML += `
+            <div class="meal" data-meal-id="${meal.idMeal}">
+              <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
+              <div class="meal-info">
+                <h3 class="meal-title">${meal.strMeal}</h3>
+                ${meal.strCategory ? `<div class="meal-category">${meal.strCategory}</div>` : ""}
+              </div>
+            </div>
+          `;
+        });
+      }
+    }
+  } catch (error) {
+    // show error message
+    errorContainer.textContent = "Could not load recommendations.";
+    errorContainer.classList.remove("hidden");
+  }
+}
+
+// load recommendations when page opens
+window.addEventListener("DOMContentLoaded", loadRandomMeals);
